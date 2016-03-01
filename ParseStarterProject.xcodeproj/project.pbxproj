@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 47;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,7 @@
 		81BA81811A49E10C00E65899 /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81BA81801A49E10C00E65899 /* ParseUI.framework */; };
 		C81B24BC1B4C3D0900B106CE /* RiderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81B24BB1B4C3D0900B106CE /* RiderViewController.swift */; };
 		E185C8A31C744678005A0507 /* RequestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E185C8A21C744678005A0507 /* RequestViewController.swift */; };
+		E1F10A431C83483E00D73BCD /* BookingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F10A421C83483E00D73BCD /* BookingViewController.swift */; };
 		E1F49D8F1C72BB55005E6300 /* DriverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F49D8E1C72BB55005E6300 /* DriverViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,7 @@
 		81BA81821A49E27F00E65899 /* ParseStarterProject-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ParseStarterProject-Bridging-Header.h"; sourceTree = "<group>"; };
 		C81B24BB1B4C3D0900B106CE /* RiderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RiderViewController.swift; sourceTree = "<group>"; };
 		E185C8A21C744678005A0507 /* RequestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestViewController.swift; sourceTree = "<group>"; };
+		E1F10A421C83483E00D73BCD /* BookingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookingViewController.swift; sourceTree = "<group>"; };
 		E1F49D8E1C72BB55005E6300 /* DriverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DriverViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -91,6 +93,7 @@
 				81BA814C1A49DA1800E65899 /* ViewController.swift */,
 				C81B24BB1B4C3D0900B106CE /* RiderViewController.swift */,
 				81BA814E1A49DA1800E65899 /* Main.storyboard */,
+				E1F10A421C83483E00D73BCD /* BookingViewController.swift */,
 				E1F49D8E1C72BB55005E6300 /* DriverViewController.swift */,
 				E185C8A21C744678005A0507 /* RequestViewController.swift */,
 				81BA81511A49DA1800E65899 /* Images.xcassets */,
@@ -174,7 +177,7 @@
 				};
 			};
 			buildConfigurationList = 81BA81401A49DA1800E65899 /* Build configuration list for PBXProject "ParseStarterProject" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -229,6 +232,7 @@
 				81BA814D1A49DA1800E65899 /* ViewController.swift in Sources */,
 				E185C8A31C744678005A0507 /* RequestViewController.swift in Sources */,
 				C81B24BC1B4C3D0900B106CE /* RiderViewController.swift in Sources */,
+				E1F10A431C83483E00D73BCD /* BookingViewController.swift in Sources */,
 				81BA814B1A49DA1800E65899 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,6 +341,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ParseStarterProject/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.parse.appdem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -354,6 +359,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = ParseStarterProject/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.parse.appdem;
 				PRODUCT_NAME = "$(TARGET_NAME)";

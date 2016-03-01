@@ -58,7 +58,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
         
         } else {
             
-            self.callUberButton.setTitle("Call an Uber", forState: UIControlState.Normal)
+            self.callUberButton.setTitle("Call an Nasber", forState: UIControlState.Normal)
             
             riderRequestActive = false
             

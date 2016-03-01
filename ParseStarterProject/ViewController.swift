@@ -18,13 +18,14 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+
+    @IBOutlet var contactno: UITextField!
+    @IBOutlet var password: UITextField!
+    @IBOutlet var username: UITextField!
     var signUpState = true
     
     //declaration of IBOutlet which allow to change the content of UI element with code
-    @IBOutlet var username: UITextField!
-    
-    @IBOutlet var password: UITextField!
-    
+
     @IBOutlet var riderLabel: UILabel!
     @IBOutlet var driverLabel: UILabel!
     @IBOutlet var `switch`: UISwitch!
@@ -32,18 +33,33 @@ class ViewController: UIViewController, UITextFieldDelegate {
     //Checking and navigate to loginRider interface once the button is tapped
     @IBAction func signUp(sender: AnyObject) {
         
-        if username.text == "" || password.text == "" {
+        /*if username.text == "" || password.text == "" || contactno.text == "" {
             
-            displayAlert("Missing Field(s)", message: "Username and password are required")
+            displayAlert("Missing Field(s)", message: "Username, password and contact number are required")
             
-        } else {
+        } else { */
             
-            
-            if signUpState == true {
+        //if the user haven't sign up
+        
+            if signUpState == false {
+                
+                if username.text == "" || password.text == "" || contactno.text == "" {
+                    
+                    displayAlert("Missing Field(s)", message: "Username, password and contact number are required")
+                    
+                } else if contactno.text != "" {
+                    
+                    let checkPhone = isValidPhone(contactno.text!)
+                    if checkPhone == false {
+                        displayAlert("Invalid Phone number", message: "Please enter a valid number")
+                    }
+                
+                } else {
                 
                 var user = PFUser()
                 user.username = username.text
                 user.password = password.text
+                user["contactNo"] = Int(contactno.text!)
 
             
                 user["isDriver"] = `switch`.on
@@ -70,12 +86,19 @@ class ViewController: UIViewController, UITextFieldDelegate {
                         }
                     
                     }
+                    }
                     
                 }
                 
             } else {
                 
-                //if the user havent signup, checking on query will be done
+                if username.text == "" || password.text == "" {
+                    
+                    displayAlert("Missing Field(s)", message: "Username and password are required")
+                    
+                } else {
+                
+                //if the user already signup and go for login, checking on query will be done
                 PFUser.logInWithUsernameInBackground(username.text!, password:password.text!) {
                     (user: PFUser?, error: NSError?) -> Void in
                     if let user = user {
@@ -102,7 +125,6 @@ class ViewController: UIViewController, UITextFieldDelegate {
                     }
                 }
                 
-                
             }
             
         }
@@ -117,29 +139,31 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         if signUpState == true {
             
-            signUpButton.setTitle("Log In", forState: UIControlState.Normal)
+            signUpButton.setTitle("Sign Up", forState: UIControlState.Normal)
             
-            toggleSignupButton.setTitle("Switch to signup", forState: UIControlState.Normal)
+            toggleSignupButton.setTitle("BACK to Login", forState: UIControlState.Normal)
             
             signUpState = false
             
-            riderLabel.alpha = 0
-            driverLabel.alpha = 0
-            `switch`.alpha = 0
+            contactno.alpha = 1
+            riderLabel.alpha = 1
+            driverLabel.alpha = 1
+            `switch`.alpha = 1
             
             //make the labels invisible
             
         } else {
             
-            signUpButton.setTitle("Sign Up", forState: UIControlState.Normal)
+            signUpButton.setTitle("Login", forState: UIControlState.Normal)
             
-            toggleSignupButton.setTitle("Switch to login", forState: UIControlState.Normal)
+            toggleSignupButton.setTitle("GO to Sign Up", forState: UIControlState.Normal)
             
             signUpState = true
             
-            riderLabel.alpha = 1
-            driverLabel.alpha = 1
-            `switch`.alpha = 1
+            contactno.alpha = 0
+            riderLabel.alpha = 0
+            driverLabel.alpha = 0
+            `switch`.alpha = 0
             
             //make the labels visible
             
@@ -148,7 +172,18 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    
+    //Validate phone number
+    func isValidPhone(value: String) -> Bool {
+        
+        let PHONE_REGEX = "^\\+\\d{3}-\\d{2}-\\d{7}$"
+        
+        let phoneTest = NSPredicate(format: "SELF MATCHES %@", PHONE_REGEX)
+        
+        let result =  phoneTest.evaluateWithObject(value)
+        
+        return result
+        
+    }
     
     @IBOutlet var toggleSignupButton: UIButton!
     
@@ -157,12 +192,18 @@ class ViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
+        //dismiss the keyboard when tap on the screen
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "DismissKeyboard")
         view.addGestureRecognizer(tap)
         
         self.username.delegate = self;
         self.password.delegate = self;
-        //dismiss the keyboard when tap on the screen
+        self.contactno.delegate = self;
+        contactno.alpha = 0
+        riderLabel.alpha = 0
+        driverLabel.alpha = 0
+        `switch`.alpha = 0
+        
     }
     
     //Calls this function when the tap is recognized.
