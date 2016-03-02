@@ -3,6 +3,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -142,7 +143,7 @@
                         <outlet property="switch" destination="eMe-JI-C3u" id="adz-eN-I9o"/>
                         <outlet property="toggleSignupButton" destination="nQl-4z-fIH" id="TtA-gG-fCT"/>
                         <outlet property="username" destination="oCb-G6-mQd" id="8aU-cV-qGX"/>
-                        <segue destination="Ca2-38-MJc" kind="show" identifier="loginRider" id="pDu-fN-o51"/>
+                        <segue destination="afG-YX-4wU" kind="show" identifier="loginRider" id="pDu-fN-o51"/>
                         <segue destination="DOW-af-ku6" kind="show" identifier="loginDriver" id="wXo-eX-5dj"/>
                     </connections>
                 </viewController>
@@ -162,60 +163,80 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RRI-ub-s5Z">
-                                <rect key="frame" x="0.0" y="20" width="600" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="QTa-DF-8hF"/>
-                                </constraints>
-                                <items>
-                                    <navigationItem title="Nasber" id="Eit-Zs-v5w">
-                                        <barButtonItem key="leftBarButtonItem" title="Logout" id="ENP-sP-QKX">
-                                            <connections>
-                                                <segue destination="BYZ-38-t0r" kind="show" identifier="logoutRider" id="G4j-Ia-041"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="UIK-NU-raD">
-                                <rect key="frame" x="146" y="87" width="309" height="280"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="309" id="Ss9-wg-k6C"/>
-                                    <constraint firstAttribute="height" constant="280" id="oRH-Qd-EzQ"/>
-                                </constraints>
+                                <rect key="frame" x="0.0" y="64" width="600" height="425"/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mZh-zB-BDp">
-                                <rect key="frame" x="146" y="399" width="309" height="30"/>
+                                <rect key="frame" x="155" y="506" width="291" height="30"/>
+                                <color key="backgroundColor" red="0.16310699867799924" green="0.20201241869023609" blue="0.45442708333333337" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="JIQ-A7-wQU"/>
+                                    <constraint firstAttribute="width" constant="291" id="3G7-3b-GKh"/>
                                     <constraint firstAttribute="height" constant="30" id="age-Hh-69e"/>
-                                    <constraint firstAttribute="width" constant="309" id="hpq-fI-z1I"/>
                                 </constraints>
-                                <state key="normal" title="Call Your Driver"/>
+                                <state key="normal" title="Call Your Driver">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="callUber:" destination="Ca2-38-MJc" eventType="touchUpInside" id="bUd-rd-CKJ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ga9-qL-Abk">
+                                <rect key="frame" x="155" y="544" width="291" height="30"/>
+                                <color key="backgroundColor" red="0.027234108631639064" green="0.86085464015151514" blue="0.025398690301037762" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="ww6-bG-yin"/>
+                                    <constraint firstAttribute="width" constant="291" id="ztV-WL-Mv0"/>
+                                </constraints>
+                                <state key="normal" title="Create New Booking Request">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="newBookingRequest:" destination="Ca2-38-MJc" eventType="touchUpInside" id="rRI-bf-hKR"/>
+                                    <segue destination="Iej-rm-LNU" kind="show" identifier="bookingView" id="lnN-AB-bLu"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="RRI-ub-s5Z" firstAttribute="top" secondItem="lIA-7h-evQ" secondAttribute="bottom" id="0C1-Vj-Omn"/>
-                            <constraint firstItem="RRI-ub-s5Z" firstAttribute="leading" secondItem="VHp-Og-jlZ" secondAttribute="leadingMargin" constant="-20" id="9dV-f6-bBF"/>
-                            <constraint firstItem="mZh-zB-BDp" firstAttribute="top" secondItem="UIK-NU-raD" secondAttribute="bottom" constant="32" id="ONM-cL-l4f"/>
+                            <constraint firstItem="mZh-zB-BDp" firstAttribute="top" secondItem="UIK-NU-raD" secondAttribute="bottom" constant="17" id="9ek-EW-8ZV"/>
+                            <constraint firstItem="MPC-Xb-UNi" firstAttribute="top" secondItem="ga9-qL-Abk" secondAttribute="bottom" constant="26" id="Fkc-nV-BrZ"/>
+                            <constraint firstItem="UIK-NU-raD" firstAttribute="top" secondItem="lIA-7h-evQ" secondAttribute="bottom" id="Rum-Ly-HJM"/>
+                            <constraint firstItem="UIK-NU-raD" firstAttribute="top" secondItem="lIA-7h-evQ" secondAttribute="bottom" id="Wqg-3B-SBj"/>
                             <constraint firstItem="mZh-zB-BDp" firstAttribute="centerX" secondItem="VHp-Og-jlZ" secondAttribute="centerX" id="Yvc-aS-XJR"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="RRI-ub-s5Z" secondAttribute="trailing" constant="-20" id="icU-LM-lRY"/>
-                            <constraint firstItem="UIK-NU-raD" firstAttribute="centerX" secondItem="VHp-Og-jlZ" secondAttribute="centerX" id="lfu-sO-vHa"/>
-                            <constraint firstItem="UIK-NU-raD" firstAttribute="top" secondItem="RRI-ub-s5Z" secondAttribute="bottom" constant="23" id="xGp-Yh-vX1"/>
+                            <constraint firstItem="ga9-qL-Abk" firstAttribute="centerX" secondItem="VHp-Og-jlZ" secondAttribute="centerX" id="g7p-33-dTY"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="UIK-NU-raD" secondAttribute="trailing" constant="-20" id="qhR-E7-dVE"/>
+                            <constraint firstItem="ga9-qL-Abk" firstAttribute="top" secondItem="mZh-zB-BDp" secondAttribute="bottom" constant="8" id="sxf-DO-6Q0"/>
+                            <constraint firstItem="UIK-NU-raD" firstAttribute="leading" secondItem="VHp-Og-jlZ" secondAttribute="leadingMargin" constant="-20" id="xp9-Xw-XQd"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Nasber" id="G4L-fO-lEl">
+                        <barButtonItem key="leftBarButtonItem" image="menu.png" id="FqI-kc-IRb"/>
+                        <barButtonItem key="rightBarButtonItem" title="Logout" id="41x-tD-nJL">
+                            <connections>
+                                <segue destination="BYZ-38-t0r" kind="show" identifier="logoutRider" id="6a4-4J-5ne"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
-                        <outlet property="callUberButton" destination="mZh-zB-BDp" id="s8K-kg-mCH"/>
+                        <outlet property="callNasberButton" destination="mZh-zB-BDp" id="h3f-Of-dA1"/>
                         <outlet property="map" destination="UIK-NU-raD" id="KuO-OS-D7X"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xfX-ER-3ik" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1197" y="228"/>
+            <point key="canvasLocation" x="1313" y="108"/>
         </scene>
         <!--Driver View Controller-->
         <scene sceneID="BdW-p9-wJ2">
@@ -244,7 +265,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Requests" id="cBz-Ej-8C3">
-                        <barButtonItem key="leftBarButtonItem" title="Logout" id="ZRF-vj-cLK">
+                        <leftBarButtonItems>
+                            <barButtonItem image="menu.png" id="TbF-mr-vng"/>
+                            <barButtonItem id="xPn-6I-WgN"/>
+                        </leftBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" title="Logout" id="ZRF-vj-cLK">
                             <connections>
                                 <segue destination="BYZ-38-t0r" kind="show" identifier="logoutDriver" id="DXQ-DR-kfo"/>
                             </connections>
@@ -253,7 +278,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1dX-VA-bRO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1075" y="1075"/>
+            <point key="canvasLocation" x="1098" y="1075"/>
         </scene>
         <!--View Request-->
         <scene sceneID="S9D-Jw-WmD">
@@ -267,31 +292,35 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C9n-fU-i86">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mxh-6a-1ep">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </mapView>
+                            <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C9n-fU-i86">
                                 <rect key="frame" x="230" y="421" width="140" height="44"/>
+                                <color key="backgroundColor" red="0.067116505745868138" green="0.86085464015151514" blue="0.2356944635034765" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="140" id="H2J-zN-K6E"/>
+                                    <constraint firstAttribute="height" constant="44" id="aOM-rT-NAw"/>
                                 </constraints>
-                                <state key="normal" title="Pick Up Rider"/>
+                                <state key="normal" title="Pick Up Rider">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <connections>
                                     <action selector="pickUpRider:" destination="nXc-yj-tub" eventType="touchUpInside" id="0ON-sS-91c"/>
                                 </connections>
                             </button>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mxh-6a-1ep">
-                                <rect key="frame" x="143" y="105" width="315" height="289"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="315" id="2se-1h-jf3"/>
-                                    <constraint firstAttribute="height" constant="289" id="jhI-HE-f4b"/>
-                                </constraints>
-                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="C9n-fU-i86" firstAttribute="top" secondItem="Qc3-eL-7e6" secondAttribute="bottom" constant="357" id="8L6-Ls-znc"/>
+                            <constraint firstItem="mxh-6a-1ep" firstAttribute="top" secondItem="Qc3-eL-7e6" secondAttribute="bottom" id="8Qw-Wb-6DL"/>
+                            <constraint firstItem="mxh-6a-1ep" firstAttribute="leading" secondItem="sQQ-hZ-AB2" secondAttribute="leadingMargin" constant="-20" id="Bvw-xc-cps"/>
+                            <constraint firstItem="UdB-bB-zzb" firstAttribute="top" secondItem="mxh-6a-1ep" secondAttribute="bottom" id="C1Q-6y-dD0"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="mxh-6a-1ep" secondAttribute="trailing" constant="-20" id="EYc-2U-rP7"/>
                             <constraint firstItem="mxh-6a-1ep" firstAttribute="centerX" secondItem="sQQ-hZ-AB2" secondAttribute="centerX" id="ItZ-MV-r1I"/>
                             <constraint firstItem="C9n-fU-i86" firstAttribute="centerX" secondItem="sQQ-hZ-AB2" secondAttribute="centerX" id="LTa-rn-atd"/>
                             <constraint firstItem="mxh-6a-1ep" firstAttribute="centerX" secondItem="sQQ-hZ-AB2" secondAttribute="centerX" id="VIl-DJ-JMB"/>
-                            <constraint firstItem="C9n-fU-i86" firstAttribute="top" secondItem="mxh-6a-1ep" secondAttribute="bottom" constant="27" id="f0i-gf-VIB"/>
-                            <constraint firstItem="mxh-6a-1ep" firstAttribute="top" secondItem="Qc3-eL-7e6" secondAttribute="bottom" constant="41" id="lzt-tg-0Hz"/>
+                            <constraint firstItem="mxh-6a-1ep" firstAttribute="top" secondItem="Qc3-eL-7e6" secondAttribute="bottom" id="YAQ-Br-RiF"/>
                         </constraints>
                     </view>
                     <connections>
@@ -318,10 +347,10 @@
             </objects>
             <point key="canvasLocation" x="245" y="1069"/>
         </scene>
-        <!--Booking View Controller-->
+        <!--Booking View-->
         <scene sceneID="DJK-vb-77p">
             <objects>
-                <viewController id="Iej-rm-LNU" customClass="BookingViewController" customModule="ParseStarterProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Booking View" id="Iej-rm-LNU" customClass="BookingViewController" customModule="ParseStarterProject" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="umF-o8-luF"/>
                         <viewControllerLayoutGuide type="bottom" id="UNO-46-5LU"/>
@@ -332,25 +361,13 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MRh-Dm-RRz">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="536" id="a6i-8R-JKM"/>
                                 </constraints>
                             </mapView>
-                            <navigationBar contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="Raa-B9-9lh">
-                                <rect key="frame" x="0.0" y="20" width="600" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="K8L-qP-Zsb"/>
-                                </constraints>
-                                <items>
-                                    <navigationItem title="Nasber" id="xCi-zY-QMW">
-                                        <barButtonItem key="leftBarButtonItem" image="menu.png" style="plain" id="AYj-P7-dDL">
-                                            <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                             <textField clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Origin" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fa8-1g-Zab">
-                                <rect key="frame" x="184" y="99" width="233" height="30"/>
+                                <rect key="frame" x="184" y="80" width="233" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="L7f-8k-tyt"/>
                                     <constraint firstAttribute="width" constant="233" id="ngU-Zl-4xa"/>
@@ -362,7 +379,7 @@
                                 </connections>
                             </textField>
                             <textField clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Destination" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QvA-zd-WlW">
-                                <rect key="frame" x="184" y="137" width="233" height="30"/>
+                                <rect key="frame" x="184" y="123" width="233" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="d7X-Yl-bLw"/>
                                     <constraint firstAttribute="width" constant="233" id="pZn-kZ-SgU"/>
@@ -373,19 +390,36 @@
                                     <action selector="searchDestination:" destination="Iej-rm-LNU" eventType="editingDidEnd" id="xap-On-WhZ"/>
                                 </connections>
                             </textField>
+                            <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QwX-K9-j64">
+                                <rect key="frame" x="216" y="433" width="169" height="30"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="GTi-h8-U9F"/>
+                                    <constraint firstAttribute="width" constant="169" id="xq9-2J-rzk"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <state key="normal" title="Submit Booking Request">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="QwX-K9-j64" firstAttribute="centerX" secondItem="O03-FD-xyy" secondAttribute="centerX" id="14t-p8-0kB"/>
                             <constraint firstAttribute="trailingMargin" secondItem="MRh-Dm-RRz" secondAttribute="trailing" constant="-20" id="5cq-nH-H0S"/>
-                            <constraint firstItem="Raa-B9-9lh" firstAttribute="leading" secondItem="O03-FD-xyy" secondAttribute="leadingMargin" constant="-20" id="9dE-Ll-0Xv"/>
                             <constraint firstItem="QvA-zd-WlW" firstAttribute="centerX" secondItem="O03-FD-xyy" secondAttribute="centerX" id="CyA-Lu-WRw"/>
                             <constraint firstItem="fa8-1g-Zab" firstAttribute="centerX" secondItem="O03-FD-xyy" secondAttribute="centerX" id="DRI-G7-hlH"/>
                             <constraint firstItem="MRh-Dm-RRz" firstAttribute="leading" secondItem="O03-FD-xyy" secondAttribute="leadingMargin" constant="-20" id="IAC-Uu-wWa"/>
-                            <constraint firstItem="fa8-1g-Zab" firstAttribute="top" secondItem="Raa-B9-9lh" secondAttribute="bottom" constant="35" id="LEZ-0N-c3c"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Raa-B9-9lh" secondAttribute="trailing" constant="-20" id="Oum-Z5-mSB"/>
-                            <constraint firstItem="MRh-Dm-RRz" firstAttribute="top" secondItem="Raa-B9-9lh" secondAttribute="bottom" id="Xph-z2-qOd"/>
-                            <constraint firstItem="Raa-B9-9lh" firstAttribute="top" secondItem="umF-o8-luF" secondAttribute="bottom" id="mNI-Go-Jwg"/>
-                            <constraint firstItem="QvA-zd-WlW" firstAttribute="top" secondItem="fa8-1g-Zab" secondAttribute="bottom" constant="8" id="rfy-UL-avd"/>
+                            <constraint firstItem="MRh-Dm-RRz" firstAttribute="top" secondItem="umF-o8-luF" secondAttribute="bottom" id="KwE-9z-Gux"/>
+                            <constraint firstItem="QwX-K9-j64" firstAttribute="top" secondItem="QvA-zd-WlW" secondAttribute="bottom" constant="280" id="duF-Io-VIa"/>
+                            <constraint firstItem="fa8-1g-Zab" firstAttribute="top" secondItem="umF-o8-luF" secondAttribute="bottom" constant="16" id="h8U-XX-gDX"/>
+                            <constraint firstItem="QvA-zd-WlW" firstAttribute="top" secondItem="fa8-1g-Zab" secondAttribute="bottom" constant="13" id="jGC-QD-YG5"/>
                         </constraints>
                     </view>
                     <connections>
@@ -396,13 +430,31 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zyU-9d-7ek" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1223" y="-598"/>
+            <point key="canvasLocation" x="2035" y="-582"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="3FD-nu-LzV">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="afG-YX-4wU" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="EuM-9l-vqG">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Ca2-38-MJc" kind="relationship" relationship="rootViewController" id="JpJ-k8-R3h"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lym-Cy-nRA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="965" y="-664"/>
         </scene>
     </scenes>
     <resources>
         <image name="menu.png" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="G4j-Ia-041"/>
+        <segue reference="6a4-4J-5ne"/>
     </inferredMetricsTieBreakers>
 </document>

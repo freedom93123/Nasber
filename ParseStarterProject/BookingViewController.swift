@@ -23,6 +23,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     
     var matchingItems: [MKMapItem] = [MKMapItem]()
     var Location: String = ""
+    //var firstatmpt = 1
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
@@ -36,9 +37,9 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         self.map.removeAnnotations(map.annotations)
         
         //Display pin on the map
-        var pinLocation : CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.latitude, location.longitude)
+        //var pinLocation : CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.latitude, location.longitude)
         var objectAnnotation = MKPointAnnotation()
-        objectAnnotation.coordinate = pinLocation
+        //objectAnnotation.coordinate = pinLocation
         objectAnnotation.title = "Your location"
         self.map.addAnnotation(objectAnnotation)
     }
@@ -58,6 +59,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     //perform search on location
     func performSearch(var Location: String) {
         
+        locationManager.stopUpdatingLocation()
         matchingItems.removeAll()
         let request = MKLocalSearchRequest()
         request.naturalLanguageQuery = Location
@@ -108,14 +110,26 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization() //prompt user to give authorization to access location tracking
-        //locationManager.startUpdatingLocation()
-        
+        //locationUpdate: while firstatmpt == 1 {
+        locationManager.startUpdatingLocation()
+        /*    firstatmpt++
+        }
+        if firstatmpt > 1 {*/
+            //locationManager.stopUpdatingLocation()
+        //}
         
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func handleSwipes(sender:UISwipeGestureRecognizer){
+        if (sender.direction == .Right) {
+            self.performSegueWithIdentifier("loginRider", sender: self)
+        }
+            
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -130,21 +144,8 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     }
     
     
-    override func viewDidAppear(animated: Bool) {
-        
-        let button = UIButton()
-        let menuImg = UIImage(named:"menu")
-        button.frame = CGRectMake(0, 0, 30, 30) //won't work if you don't set frame
-        button.setImage(menuImg, forState: .Normal)
-        button.addTarget(self, action: Selector("menuPressed"), forControlEvents: .TouchUpInside)
-        
-        let barButton = UIBarButtonItem()
-        barButton.customView = button
-        self.navigationItem.rightBarButtonItem = barButton
-        
-        
-    }
+    override func viewWillAppear(animated: Bool) {
+            }
     
-    
-    
+
 }

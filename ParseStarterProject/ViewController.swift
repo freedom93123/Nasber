@@ -230,10 +230,12 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
             if PFUser.currentUser()?["isDriver"]! as! Bool == true {
                 
+                navigationController?.setNavigationBarHidden(navigationController?.navigationBarHidden == false, animated: false)
                 self.performSegueWithIdentifier("loginDriver", sender: self)
                 
             } else {
                 
+                navigationController?.setNavigationBarHidden(navigationController?.navigationBarHidden == false, animated: false)
                 self.performSegueWithIdentifier("loginRider", sender: self)  // Call up another Interface
                 
             }

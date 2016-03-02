@@ -13,7 +13,7 @@ import MapKit
 class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
     //declaration of IBOutlet which allow to change the content of UI element with code
-    @IBOutlet var callUberButton: UIButton!
+    @IBOutlet var callNasberButton: UIButton!
     @IBOutlet var map: MKMapView!
     
     var riderRequestActive = false
@@ -39,7 +39,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
             (success: Bool, error: NSError?) -> Void in
             if (success) {
                 
-                self.callUberButton.setTitle("Cancel Nasber", forState: UIControlState.Normal)
+                self.callNasberButton.setTitle("Cancel Nasber", forState: UIControlState.Normal)
                 
                 
                 
@@ -58,7 +58,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
         
         } else {
             
-            self.callUberButton.setTitle("Call an Nasber", forState: UIControlState.Normal)
+            self.callNasberButton.setTitle("Call an Nasber", forState: UIControlState.Normal)
             
             riderRequestActive = false
             
@@ -91,6 +91,16 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
             
         }
     }
+    
+
+    @IBAction func newBookingRequest(sender: AnyObject) {
+        let backItem = UIBarButtonItem()
+        backItem.title = "Nasber"
+        navigationItem.backBarButtonItem = backItem
+        //self.performSegueWithIdentifier("bookingView", sender: self)
+
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -160,7 +170,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
                                                 let distanceKM = distanceMeters / 1000
                                                 let roundedTwoDigitDistance = Double(round(distanceKM * 10) / 10)
                                                 
-                                                self.callUberButton.setTitle("Driver is \(roundedTwoDigitDistance)km away!", forState: UIControlState.Normal)
+                                                self.callNasberButton.setTitle("Driver is \(roundedTwoDigitDistance)km away!", forState: UIControlState.Normal)
                                                 
                                                 self.driverOnTheWay = true
                                                 
@@ -250,11 +260,9 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
         
         if segue.identifier == "logoutRider" {
             
+            navigationController?.setNavigationBarHidden(navigationController?.navigationBarHidden == false, animated: false)
             PFUser.logOut()
             
         }
-        
     }
-    
-    
 }

@@ -246,6 +246,10 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
             
         } else if segue.identifier == "showViewRequests" {
             
+                let backItem = UIBarButtonItem()
+                backItem.title = "Back"
+                navigationItem.backBarButtonItem = backItem
+
             //Casting as RequestViewController allow the passing var of location and usernames to the segue
             if let destination = segue.destinationViewController as? RequestViewController {
                 
