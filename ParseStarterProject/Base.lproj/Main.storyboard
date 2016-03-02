@@ -407,6 +407,9 @@
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="submitBookRequest:" destination="Iej-rm-LNU" eventType="touchUpInside" id="3q1-03-Eav"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -426,6 +429,7 @@
                         <outlet property="destination" destination="QvA-zd-WlW" id="jjy-Qw-ZuU"/>
                         <outlet property="map" destination="MRh-Dm-RRz" id="IU0-6b-Qgg"/>
                         <outlet property="origin" destination="fa8-1g-Zab" id="CT0-rq-ElT"/>
+                        <outlet property="submitRequest" destination="QwX-K9-j64" id="pEh-WA-Wdu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zyU-9d-7ek" userLabel="First Responder" sceneMemberID="firstResponder"/>

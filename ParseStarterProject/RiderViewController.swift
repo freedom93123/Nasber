@@ -97,7 +97,6 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
         let backItem = UIBarButtonItem()
         backItem.title = "Nasber"
         navigationItem.backBarButtonItem = backItem
-        //self.performSegueWithIdentifier("bookingView", sender: self)
 
     }
 

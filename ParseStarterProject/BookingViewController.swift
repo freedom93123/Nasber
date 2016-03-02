@@ -17,13 +17,21 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     @IBOutlet var destination: UITextField!
     
     @IBOutlet var map: MKMapView!
+    @IBOutlet var submitRequest: UIButton!
     
     var latitude: CLLocationDegrees = 0
     var longitude: CLLocationDegrees = 0
     
     var matchingItems: [MKMapItem] = [MKMapItem]()
     var Location: String = ""
+    
+    var eyePressed = true
     //var firstatmpt = 1
+
+    //perform function when user tap on submit booking request button
+    @IBAction func submitBookRequest(sender: AnyObject) {
+    }
+    
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
@@ -114,22 +122,24 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         locationManager.startUpdatingLocation()
         /*    firstatmpt++
         }
-        if firstatmpt > 1 {*/
-            //locationManager.stopUpdatingLocation()
-        //}
+        if firstatmpt > 1 {
+            locationManager.stopUpdatingLocation()
+        }
         
+        var LongPressGesture = UILongPressGestureRecognizer(target: map, action: Selector("handleLPGesture:"))
+        map.addGestureRecognizer(LongPressGesture)*/
     }
+    
+    /*func handleLPGesture(LongPressGesture:UILongPressGestureRecognizer){
+        origin.alpha = 0
+        destination.alpha = 0
+        submitRequest.alpha = 0
+        
+    }*/
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func handleSwipes(sender:UISwipeGestureRecognizer){
-        if (sender.direction == .Right) {
-            self.performSegueWithIdentifier("loginRider", sender: self)
-        }
-            
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -145,7 +155,29 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     
     
     override func viewWillAppear(animated: Bool) {
-            }
+        let button = UIButton()
+        button.frame = CGRectMake(0, 0, 30, 30) //won't work if you don't set frame
+        button.setImage(UIImage(named: "eye_open.png"), forState: .Normal)
+        button.addTarget(self, action: Selector("eyeButtonPressed"), forControlEvents: .TouchUpInside)
+        
+        let barButton = UIBarButtonItem()
+        barButton.customView = button
+        self.navigationItem.rightBarButtonItem = barButton
+    }
+    
+    func eyeButtonPressed(){
+        if eyePressed == true {
+            origin.alpha = 0
+            destination.alpha = 0
+            submitRequest.alpha = 0
+            eyePressed = false
+        } else {
+            origin.alpha = 1
+            destination.alpha = 1
+            submitRequest.alpha = 1
+            eyePressed = true
+        }
+    }
     
 
 }

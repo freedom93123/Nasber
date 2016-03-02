@@ -24,6 +24,7 @@
 		E185C8A31C744678005A0507 /* RequestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E185C8A21C744678005A0507 /* RequestViewController.swift */; };
 		E1E833141C856CB8002DCC06 /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = E1E833131C856CB8002DCC06 /* menu.png */; };
 		E1F10A431C83483E00D73BCD /* BookingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F10A421C83483E00D73BCD /* BookingViewController.swift */; };
+		E1F1B20C1C86CE6C00989DF5 /* eye_open.png in Resources */ = {isa = PBXBuildFile; fileRef = E1F1B20B1C86CE6C00989DF5 /* eye_open.png */; };
 		E1F49D8F1C72BB55005E6300 /* DriverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F49D8E1C72BB55005E6300 /* DriverViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +49,7 @@
 		E185C8A21C744678005A0507 /* RequestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestViewController.swift; sourceTree = "<group>"; };
 		E1E833131C856CB8002DCC06 /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		E1F10A421C83483E00D73BCD /* BookingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookingViewController.swift; sourceTree = "<group>"; };
+		E1F1B20B1C86CE6C00989DF5 /* eye_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eye_open.png; sourceTree = "<group>"; };
 		E1F49D8E1C72BB55005E6300 /* DriverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DriverViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,6 +76,7 @@
 		81BA813C1A49DA1800E65899 = {
 			isa = PBXGroup;
 			children = (
+				E1F1B20B1C86CE6C00989DF5 /* eye_open.png */,
 				E1E833131C856CB8002DCC06 /* menu.png */,
 				81BA81471A49DA1800E65899 /* ParseStarterProject */,
 				81BA816A1A49DB5600E65899 /* Frameworks */,
@@ -205,6 +208,7 @@
 				81BA81501A49DA1800E65899 /* Main.storyboard in Resources */,
 				81BA81521A49DA1800E65899 /* Images.xcassets in Resources */,
 				E1E833141C856CB8002DCC06 /* menu.png in Resources */,
+				E1F1B20C1C86CE6C00989DF5 /* eye_open.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
