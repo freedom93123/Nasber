@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import MapKit
 
-class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
+class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
     //declaration of IBOutlet which allow to change the content of UI element with code
     @IBOutlet var callNasberButton: UIButton!
@@ -23,7 +23,30 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
     
     var latitude: CLLocationDegrees = 0
     var longitude: CLLocationDegrees = 0
+    var menuPressed = true
     
+    @IBOutlet var menuView: UIView!
+    
+    @IBAction func menuButton(sender: AnyObject) {
+
+        if menuPressed == true {
+            UIView.animateWithDuration(0.5, delay: 0.0, options: UIViewAnimationOptions.TransitionCurlDown, animations: {
+                self.menuView.alpha = 1
+                self.menuView.layoutIfNeeded()
+                }, completion: nil)
+            menuPressed = false
+        } else {
+            UIView.animateWithDuration(0.5, delay: 0.0, options: UIViewAnimationOptions.TransitionCurlUp, animations: {
+                self.menuView.alpha = 0
+                self.menuView.layoutIfNeeded()
+                }, completion: nil)
+                menuPressed = true
+        }
+    }
+    
+    @IBAction func myProfileBtn(sender: AnyObject) {
+        self.menuView.alpha = 0
+    }
     //declaration of IBAction which allow code to run when a button is tapped
     //riderRequest for ride and store the username & location on parse
     @IBAction func callUber(sender: AnyObject) {
@@ -38,7 +61,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
         riderRequest.saveInBackgroundWithBlock {
             (success: Bool, error: NSError?) -> Void in
             if (success) {
-                
+      
                 self.callNasberButton.setTitle("Cancel Nasber", forState: UIControlState.Normal)
                 
                 
@@ -77,7 +100,6 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
                         
                         for object in objects {
                             
-                            
                             object.deleteInBackground()
 
                         }
@@ -104,10 +126,11 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.addSlideMenuButton()
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization() //prompt user to give authorization to access location tracking
+        locationManager.requestAlwaysAuthorization() //prompt user to give authorization to access location tracking
         locationManager.startUpdatingLocation()
         
 
@@ -135,9 +158,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
             
             if error == nil {
                 
-                
                 if let objects = objects as? [PFObject] {
-                    
                     
                     for object in objects {
                         
@@ -153,9 +174,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
                                 
                                 if error == nil {
                                     
-                                    
                                     if let objects = objects as? [PFObject] {
-                                        
                                         
                                         for object in objects {
                                             
@@ -190,8 +209,8 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
                                                 var pinLocation : CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.latitude, location.longitude)
                                                 var objectAnnotation = MKPointAnnotation()
                                                 objectAnnotation.coordinate = pinLocation
-                                                objectAnnotation.title = "Your location"
-                                                self.map.addAnnotation(objectAnnotation)
+                                                //objectAnnotation.title = "Your location"
+                                                //self.map.addAnnotation(objectAnnotation)
                                                 
                                                 //Display driver pin on the map
                                                 pinLocation = CLLocationCoordinate2DMake(driverLocation.latitude, driverLocation.longitude)
@@ -234,7 +253,7 @@ class RiderViewController: UIViewController, CLLocationManagerDelegate, MKMapVie
             
             self.map.setRegion(region, animated: true)
             
-            //Display pin on the map
+            //Remove pin on the map
             self.map.removeAnnotations(map.annotations)
             
             //Display pin on the map

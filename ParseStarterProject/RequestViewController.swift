@@ -79,11 +79,7 @@ class RequestViewController: UIViewController, CLLocationManagerDelegate {
                                 
                             }
                             
-                        })
-                        
-                        
-                        
-                        
+                        })    
                         
                     }
                 }

@@ -52,44 +52,42 @@ class ViewController: UIViewController, UITextFieldDelegate {
                     let checkPhone = isValidPhone(contactno.text!)
                     if checkPhone == false {
                         displayAlert("Invalid Phone number", message: "Please enter a valid number")
-                    }
-                
-                } else {
-                
-                var user = PFUser()
-                user.username = username.text
-                user.password = password.text
-                user["contactNo"] = Int(contactno.text!)
-
-            
-                user["isDriver"] = `switch`.on
-            
-                user.signUpInBackgroundWithBlock {
-                    (succeeded: Bool, error: NSError?) -> Void in
-                    if let error = error {
-                        if let errorString = error.userInfo["error"] as? String {
-                    
-                            self.displayAlert("Sign Up Failed", message: errorString)
-                    
-                        }
-                    
-                    
                     } else {
                         
-                        if self.`switch`.on == true {
-                            
-                            self.performSegueWithIdentifier("loginDriver", sender: self)
-                        } else {
-                    
-                        self.performSegueWithIdentifier("loginRider", sender: self)  // Call up another Interface
-                            
+                        var user = PFUser()
+                        user.username = username.text
+                        user.password = password.text
+                        user["contactNo"] = Int(contactno.text!)
+                        
+                        
+                        user["isDriver"] = `switch`.on
+                        
+                        user.signUpInBackgroundWithBlock {
+                            (succeeded: Bool, error: NSError?) -> Void in
+                            if let error = error {
+                                if let errorString = error.userInfo["error"] as? String {
+                                    
+                                    self.displayAlert("Sign Up Failed", message: errorString)
+                                    
+                                }
+                                
+                                
+                            } else {
+                                
+                                if self.`switch`.on == true {
+                                    
+                                    self.performSegueWithIdentifier("loginDriver", sender: self)
+                                } else {
+                                    
+                                    self.performSegueWithIdentifier("loginRider", sender: self)  // Call up another Interface
+                                    
+                                }
+                                
+                            }
                         }
-                    
+                        
                     }
-                    }
-                    
                 }
-                
             } else {
                 
                 if username.text == "" || password.text == "" {
@@ -175,7 +173,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     //Validate phone number
     func isValidPhone(value: String) -> Bool {
         
-        let PHONE_REGEX = "^\\+\\d{3}-\\d{2}-\\d{7}$"
+        let PHONE_REGEX = "^6?01\\d{8}$"
         
         let phoneTest = NSPredicate(format: "SELF MATCHES %@", PHONE_REGEX)
         

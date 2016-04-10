@@ -10,7 +10,7 @@ import UIKit
 import Parse
 import MapKit
 
-class DriverViewController: UITableViewController, CLLocationManagerDelegate{
+class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocationManagerDelegate{
 
     var usernames = [String]()
     var locations = [CLLocationCoordinate2D]()
@@ -21,9 +21,12 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
     var latitude: CLLocationDegrees = 0
     var longitude: CLLocationDegrees = 0
     
+    override func viewDidAppear(animated: Bool) {
+        self.addSlideMenuButton()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -31,9 +34,84 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
         locationManager.startUpdatingLocation()
 
     }
-        
 
+    func addSlideMenuButton(){
+        let btnShowMenu = UIButton(type: UIButtonType.System)
+        let image = UIImage(named: "menu.png")
+        btnShowMenu.setImage(image,  forState: UIControlState.Normal)
+        btnShowMenu.frame = CGRectMake(0, 0, 30, 30)
+        btnShowMenu.addTarget(self, action: "onSlideMenuButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        let customBarItem = UIBarButtonItem(customView: btnShowMenu)
+        self.navigationItem.leftBarButtonItem = customBarItem;
+    }
     
+    func slideMenuItemSelectedAtIndex(index: Int32) {
+        let topViewController : UIViewController = self.navigationController!.topViewController!
+        print("View Controller is : \(topViewController) \n", terminator: "")
+        switch(index){
+        case 0:
+            print("Home\n", terminator: "")
+            let DriverViewController = self.storyboard!.instantiateViewControllerWithIdentifier("DriverViewController") as UIViewController
+            self.navigationController!.pushViewController(DriverViewController, animated: true)
+            tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
+            break
+        case 1:
+            print("My Profile\n", terminator: "")
+            let MyProfileViewController = self.storyboard!.instantiateViewControllerWithIdentifier("MyProfileViewController") as UIViewController
+            self.navigationController!.pushViewController(MyProfileViewController, animated: true)
+            tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
+            break
+        case 2:
+            print("My Booking\n", terminator: "")
+            break
+        default:
+            print("default\n", terminator: "")
+        }
+    }
+    
+    func onSlideMenuButtonPressed(sender : UIButton){
+        tableView.contentInset = UIEdgeInsetsZero
+        if (sender.tag == 10)
+        {
+            tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
+            // To Hide Menu If it already there
+            self.slideMenuItemSelectedAtIndex(-1);
+            //tableView.contentInset =
+            
+            sender.tag = 0;
+            
+            let viewMenuBack : UIView = view.subviews.last!
+            
+            UIView.animateWithDuration(0.3, animations: { () -> Void in
+                var frameMenu : CGRect = viewMenuBack.frame
+                frameMenu.origin.x = -1 * UIScreen.mainScreen().bounds.size.width
+                viewMenuBack.frame = frameMenu
+                viewMenuBack.layoutIfNeeded()
+                viewMenuBack.backgroundColor = UIColor.clearColor()
+                }, completion: { (finished) -> Void in
+                    viewMenuBack.removeFromSuperview()
+            })
+            
+            return
+        }
+        
+        sender.enabled = false
+        sender.tag = 10
+        
+        let menuVC : MenuViewController = self.storyboard!.instantiateViewControllerWithIdentifier("MenuViewController") as! MenuViewController
+        menuVC.btnMenu = sender
+        menuVC.delegate = self
+        self.view.addSubview(menuVC.view)
+        self.addChildViewController(menuVC)
+        menuVC.view.layoutIfNeeded()
+        menuVC.view.frame=CGRectMake(0 - UIScreen.mainScreen().bounds.size.width, 0, UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height);
+        UIView.animateWithDuration(0.3, animations: { () -> Void in
+            menuVC.view.frame=CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height);
+            sender.enabled = true
+            }, completion:nil)
+    }
+
+
 
     //Display location on Mapkit and update the location always
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -44,7 +122,7 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
         self.latitude = location.latitude
         self.longitude = location.longitude
         
-        print("locations = \(location.latitude) \(location.longitude)")
+        //print("locations = \(location.latitude) \(location.longitude)")
         
         var query = PFQuery(className:"driverLocation")
         
@@ -58,8 +136,6 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
             (objects: [AnyObject]?, error: NSError?) -> Void in
             
             if error == nil {
-                
-                print("Successfully retrieved \(objects!.count) scores.")
                 
                 //if there is driver location on the parse
                 if let objects = objects as? [PFObject] {
@@ -184,7 +260,6 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
         var distanceDouble = Double(distances[indexPath.row])
         var roundedDistance = Double(round(distanceDouble * 10) / 10)
         cell.textLabel?.text = usernames[indexPath.row] + " - " + String(roundedDistance) + " km away"
-
         return cell
     }
     
@@ -249,7 +324,7 @@ class DriverViewController: UITableViewController, CLLocationManagerDelegate{
                 let backItem = UIBarButtonItem()
                 backItem.title = "Back"
                 navigationItem.backBarButtonItem = backItem
-
+            
             //Casting as RequestViewController allow the passing var of location and usernames to the segue
             if let destination = segue.destinationViewController as? RequestViewController {
                 
