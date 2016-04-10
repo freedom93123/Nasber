@@ -251,17 +251,17 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
             let center = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
             let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
             
-            self.map.setRegion(region, animated: true)
+            self.map.setRegion(region, animated: false)
             
             //Remove pin on the map
             self.map.removeAnnotations(map.annotations)
             
-            //Display pin on the map
+            //Display driver pin on the map
             var pinLocation : CLLocationCoordinate2D = CLLocationCoordinate2DMake(location.latitude, location.longitude)
             var objectAnnotation = MKPointAnnotation()
             objectAnnotation.coordinate = pinLocation
             objectAnnotation.title = "Your location"
-            self.map.addAnnotation(objectAnnotation)
+            //self.map.addAnnotation(objectAnnotation)
             
         }
         

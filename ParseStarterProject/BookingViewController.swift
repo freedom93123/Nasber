@@ -19,8 +19,6 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     
     @IBOutlet var origin: UITextField!
     @IBOutlet var destination: UITextField!
-    @IBOutlet var driverlabel: UILabel!
-    @IBOutlet var riderlabel: UILabel!
     @IBOutlet var enterButtonArray: [UIButton]!
     
     @IBOutlet var totalTimeLabel: UILabel!
@@ -38,7 +36,6 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     
     @IBOutlet var map: MKMapView!
     @IBOutlet var submitRequest: UIButton!
-    @IBOutlet var calETA: UIButton!
     @IBOutlet var meetingStart: UITextField!
     @IBOutlet var meetingEnd: UITextField!
     
@@ -272,12 +269,14 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                 //self.enterButtonArray.filter{$0.tag == 1}.first!.selected = true
                 
                 //Create annotation for the placemarks
-                var driverAnnotation = MKPointAnnotation()
+                var driverAnnotation = CustomPointAnnotation()
                 driverAnnotation.coordinate = driverCLLocation.coordinate
                 driverAnnotation.title = "Driver Location"
+                driverAnnotation.imageName = "car.png"
                 
-                var pinAnnotationView = MKAnnotationView(annotation: driverAnnotation, reuseIdentifier: nil)
-                pinAnnotationView.image = UIImage(named:"car")
+                //var pinAnnotationView = MKAnnotationView(annotation: driverAnnotation, reuseIdentifier: nil)
+                //pinAnnotationView.image = UIImage(named:"car.png")
+                
                 self.map.addAnnotation(driverAnnotation)
             }
         })
@@ -290,28 +289,26 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         
         //current user location
         //Reverse geocoding is the process of turning a location’s coordinates into a human-readable address.
-        CLGeocoder().reverseGeocodeLocation(locations.last!,
-                                            completionHandler: {(placemarks:[CLPlacemark]?, error:NSError?) -> Void in
-                                                if let placemarks = placemarks {
-                                                    let placemark = placemarks[0]
-                                                    self.locationTuples[1].mapItem = MKMapItem(placemark:
-                                                        MKPlacemark(coordinate: placemark.location!.coordinate,
-                                                            addressDictionary: placemark.addressDictionary as! [String:AnyObject]?))
-                                                    self.origin.text = self.formatAddressFromPlacemark(placemark)
-                                                    //The above code finds and selects the Enter button with tag 1, i.e. the Enter button next to the origin UITextField also with tag 1, so that the button’s text changes to ✓ to reflect its selected state.
-                                                    self.enterButtonArray.filter{$0.tag == 2}.first!.selected = true
-                                                    
-                                                    var riderAnnotation = MKPointAnnotation()
-                                                    riderAnnotation.coordinate = locations.last!.coordinate
-                                                    riderAnnotation.title = self.origin.text
-                                                    
-                                                    var pinAnnotationView = MKPinAnnotationView(annotation: riderAnnotation, reuseIdentifier: nil)
-                                                    pinAnnotationView.animatesDrop = false
-                                                    
-                                                    self.map.addAnnotation(riderAnnotation)
-                                                }
+        CLGeocoder().reverseGeocodeLocation(locations.last!, completionHandler: {(placemarks:[CLPlacemark]?, error:NSError?) -> Void in
+                if let placemarks = placemarks {
+                    let placemark = placemarks[0]
+                    self.locationTuples[1].mapItem = MKMapItem(placemark:
+                        MKPlacemark(coordinate: placemark.location!.coordinate,
+                            addressDictionary: placemark.addressDictionary as! [String:AnyObject]?))
+                    self.origin.text = self.formatAddressFromPlacemark(placemark)
+                    //The above code finds and selects the Enter button with tag 1, i.e. the Enter button next to the origin UITextField also with tag 1, so that the button’s text changes to ✓ to reflect its selected state.
+                    self.enterButtonArray.filter{$0.tag == 2}.first!.selected = true
+                    
+                    var riderAnnotation = MKPointAnnotation()
+                    riderAnnotation.coordinate = locations.last!.coordinate
+                    riderAnnotation.title = self.origin.text
+                    
+                    var pinAnnotationView = MKPinAnnotationView(annotation: riderAnnotation, reuseIdentifier: nil)
+                    pinAnnotationView.animatesDrop = false
+                    
+                    self.map.addAnnotation(riderAnnotation)
+                }
         })
-        
         self.map.showAnnotations(self.map.annotations, animated: true)
     }
     
@@ -381,7 +378,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                          */
                         
                     }
-                    self.map.showAnnotations(self.map.annotations, animated: true)
+                    self.map.showAnnotations(self.map.annotations, animated: false)
                     self.navigationController!.navigationBar.hidden = true
                     self.showAddressTable(addresses, textField:currentTextField,
                         placemarks:placemarks, sender:sender)
@@ -488,18 +485,33 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
          }*/
         
         if textField.tag == 2{
-            self.performSearch(origin.text!)
+            //self.performSearch(origin.text!)
         }
         
         if textField.tag == 3{
-            self.performSearch(destination.text!)
+            //self.performSearch(destination.text!)
         }
         
-        if origin.text != "" && destination.text != "" {
+        //Draw polylines when there are inputs for both origin and destination
+        //Calculate the ETA required to reach the destination from origin
+        if locationTuples[2].mapItem != nil {
             
             self.map.removeAnnotations(map.annotations)
             self.map.removeOverlays(map.overlays)
             locationManager.stopUpdatingLocation()
+            
+            var RiderAnnotation = MKPointAnnotation()
+            RiderAnnotation.coordinate = self.locationTuples[1].mapItem!.placemark.coordinate
+            RiderAnnotation.title = self.locationTuples[1].mapItem!.name
+            self.map.addAnnotation(RiderAnnotation)
+            
+            var DestinationAnnotation = CustomPointAnnotation()
+            DestinationAnnotation.coordinate = self.locationTuples[2].mapItem!.placemark.coordinate
+            DestinationAnnotation.title = self.locationTuples[2].mapItem!.name
+            DestinationAnnotation.imageName = "destination_icon"
+            self.map.addAnnotation(DestinationAnnotation)
+            
+            self.totalTimeLabel.alpha = 1
             if locationsArray.first != nil {
                 view.endEditing(true)
                 //calculate the route starting at index 0 of locationArray, with an initial total time of 0 and an initially empty route array.
@@ -510,6 +522,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         
     }
     
+    /*
     //perform search on location
     func performSearch(var Location: String){
         
@@ -562,6 +575,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
             }
         })
     }
+    */
     
     //This funcion accepts a mutable array of segment routes and a mutable time variable.
     func calculateSegmentDirections(index: Int,
@@ -626,19 +640,20 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         //Adds the MKRoute's polyline to the map as an overlay.
         map.addOverlay(route.polyline)
         // If the plotted route is the first overlay, sets the map's visible area so it's just big enough to fit the overlay with 10 extra points of padding.
-        if map.overlays.count == 1 {
+        if map.overlays.count == 2 {
             map.setVisibleMapRect(route.polyline.boundingMapRect,
                                   edgePadding: UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0),
                                   animated: false)
         }
             //If the plotted route is not the first, set the map's visible area to the union of the new and old visible map areas with 10 extra points of padding.
-        else {
+            //When plot more than one line
+        /*else {
             let polylineBoundingRect =  MKMapRectUnion(map.visibleMapRect,
                                                        route.polyline.boundingMapRect)
             map.setVisibleMapRect(polylineBoundingRect,
                                   edgePadding: UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0),
                                   animated: false)
-        }
+        }*/
     }
     
     //print the ETA
@@ -663,22 +678,49 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                  rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer! {
         let polylineRenderer = MKPolylineRenderer(overlay: overlay)
         if (overlay is MKPolyline) {
-            if map.overlays.count == 1 {
+            /*if map.overlays.count == 1 {
                 polylineRenderer.strokeColor =
                     UIColor.blueColor().colorWithAlphaComponent(0.50)
-            } else if map.overlays.count == 2 {
+            } else */if map.overlays.count == 2 {
                 polylineRenderer.strokeColor =
                     UIColor.greenColor().colorWithAlphaComponent(0.75)
-            } else if map.overlays.count == 3 {
+            } /*else if map.overlays.count == 3 {
                 polylineRenderer.strokeColor =
                     UIColor.redColor().colorWithAlphaComponent(0.50)
-            }
+            }*/
             
             polylineRenderer.lineWidth = 5
         }
         return polylineRenderer
         
     }
+    
+    //create custom annotation to override the old pin image annotation
+    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+        if !(annotation is CustomPointAnnotation) {
+            return nil
+        }
+        
+        let reuseId = "driverAnnotation"
+        
+        var anView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
+        if anView == nil {
+            anView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            anView!.canShowCallout = true
+        }
+        else {
+            anView!.annotation = annotation
+        }
+        
+        //Set annotation-specific properties **AFTER**
+        //the view is dequeued or created...
+        
+        let cpa = annotation as! CustomPointAnnotation
+        anView!.image = UIImage(named:cpa.imageName)
+        
+        return anView
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -781,6 +823,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         
     }
 }
+
 
 
 
