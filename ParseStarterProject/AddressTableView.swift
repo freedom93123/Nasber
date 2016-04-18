@@ -42,7 +42,7 @@ extension AddressTableView: UITableViewDelegate {
         label.font = UIFont(name: "Helvetica Neue Light", size: 15)
         label.textAlignment = .Center
         label.text = "Best Matches"
-        label.backgroundColor = UIColor(red: 240.0/255.0, green: 229.0/255.0, blue: 141.0/225.0, alpha: 1)
+        label.backgroundColor = UIColor(red: 154.0/255.0, green: 154.0/255.0, blue: 154.0/225.0, alpha: 1)
         
         return label
     }

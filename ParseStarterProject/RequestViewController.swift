@@ -11,9 +11,108 @@ import MapKit
 import Parse
 
 
-class RequestViewController: UIViewController, CLLocationManagerDelegate {
-    @IBOutlet var map: MKMapView!
+class RequestViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
+   
+    var requestLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(0,0)
+    var requestUsername:String = ""
+    var driverCLLocation = CLLocation()
+    var requestCLLocation = CLLocation()
+    var MapItem:[(integer: Int!, mapItem: MKMapItem?)]!
 
+    var currentDate = NSDate()
+    var TTime = NSTimeInterval()
+
+    var locationManager:CLLocationManager!
+    
+    @IBOutlet var map: MKMapView!
+    @IBOutlet var travellingT: UILabel!
+    @IBOutlet var etaLabel: UILabel!
+    
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        //Create a placemark from driverlocation
+        CLGeocoder().reverseGeocodeLocation(locations.last!, completionHandler: {(placemarks:[CLPlacemark]?, error:NSError?) -> Void in
+            
+            if error != nil {
+                print(error!)
+                
+            } else {
+                if let placemarks = placemarks {
+                    let placemark = placemarks[0]
+                    
+                    //Map request and use the placemark to navigate to rider location
+                    //self.driverMapItem =
+                    self.MapItem[0].mapItem = (MKMapItem(placemark: MKPlacemark(coordinate: placemark.location!.coordinate, addressDictionary:placemark.addressDictionary as! [String:AnyObject]?)))
+                    //print(self.driverMapItem.name)
+                } else {
+                    print("Problem with the data received from geocoder")
+                }
+                
+            }
+            
+        })
+        
+        //Create a placemark from requestlocation
+        requestCLLocation = CLLocation(latitude: self.requestLocation.latitude, longitude: self.requestLocation.longitude)
+        CLGeocoder().reverseGeocodeLocation(requestCLLocation, completionHandler: {(placemarks:[CLPlacemark]?, error:NSError?) -> Void in
+            
+            if error != nil {
+                print(error!)
+                
+            } else {
+                if let placemarks = placemarks {
+                    let placemark = placemarks[0]
+                    
+                    //Map request and use the placemark to navigate to rider location
+                    //self.requestMapItem =
+                    self.MapItem[1].mapItem = (MKMapItem(placemark: MKPlacemark(coordinate: placemark.location!.coordinate, addressDictionary:placemark.addressDictionary as! [String:AnyObject]?)))
+                } else {
+                    print("Problem with the data received from geocoder")
+                }
+                
+            }
+            
+        })
+    }
+    
+    @IBAction func calculate(sender: AnyObject) {
+        
+        locationManager.stopUpdatingLocation()
+        let request: MKDirectionsRequest = MKDirectionsRequest()
+        request.source = MapItem[0].mapItem
+        request.destination = MapItem[1].mapItem
+        // Set requestsAlternateRoutes to true to fetch all the reasonable routes from the origin to destination.
+        request.requestsAlternateRoutes = true
+        // Set the transportation type to .Automobile for this particular scenario. eg .Walking and .Any
+        request.transportType = .Automobile
+        // Initialize an MKDirections object with the MKDirectionsRequest, then call calculateDirectionsWithCompletionHandler(_:) to get an MKDirectionsResponse containing an array of MKRoutes.
+        var time:NSTimeInterval = 0
+        var routes = [MKRoute]()
+        let directions = MKDirections(request: request)
+        directions.calculateDirectionsWithCompletionHandler ({
+            (response: MKDirectionsResponse?, error: NSError?) in
+            if let routeResponse = response?.routes {
+                //sort the routes from least to greatest expected travel time, then pull out the first index, i.e., the index with the shortest expected travel time.
+                let quickestRouteForSegment: MKRoute =
+                    routeResponse.sort({$0.expectedTravelTime <
+                        $1.expectedTravelTime})[0]
+                routes.append(quickestRouteForSegment)
+                // Add this new route’s expected travel time to the time parameter.
+                time += quickestRouteForSegment.expectedTravelTime
+                self.TTime = time
+            }
+        })
+        
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .ShortStyle
+        formatter.timeStyle = .ShortStyle
+        travellingT.text = "Travelling Time: \(stringFromTimeInterval(self.TTime))"
+        etaLabel.text = "ETA: " + formatter.stringFromDate(currentDate.dateByAddingTimeInterval(self.TTime))
+        
+        
+
+    }
+    
     @IBAction func pickUpRider(sender: AnyObject) {
     
     //find the particular request
@@ -23,10 +122,7 @@ class RequestViewController: UIViewController, CLLocationManagerDelegate {
         (objects: [AnyObject]?, error: NSError?) -> Void in
     
         if error == nil {
-    
-        print("Successfully retrieved \(objects!.count) scores.")
-    
-    
+
         if let objects = objects as? [PFObject] {
     
             for object in objects {
@@ -40,19 +136,27 @@ class RequestViewController: UIViewController, CLLocationManagerDelegate {
                     } else if let object = object {
                         
                         //update the object so that it is responded by driver
+                        //Set the access control list to readable and writable
                         object["driverResponded"] = PFUser.currentUser()!.username!
                         
-                        object.saveInBackground()
+                        object.saveInBackgroundWithBlock {
+                            (success: Bool, error: NSError?) -> Void in
+                            if (success) {
+                                // The object has been saved.
+                                print("objectUpdated")
+                            } else {
+                                // There was a problem, check error.description
+                               print("objectFailedToUpdate")
+                            }
+                        }
                         
                         //navigate to the rider location on driver app
                         //create CLLocation
-                        let requestCLLocation = CLLocation(latitude: self.requestLocation.latitude, longitude: self.requestLocation.longitude)
-                        
+                        self.requestCLLocation = CLLocation(latitude: self.requestLocation.latitude, longitude: self.requestLocation.longitude)
                         //Create a placemark from location
-                        CLGeocoder().reverseGeocodeLocation(requestCLLocation, completionHandler: { (placemarks, error) -> Void in
+                        CLGeocoder().reverseGeocodeLocation(self.requestCLLocation, completionHandler: { (placemarks, error) -> Void in
                             
                             if error != nil {
-                                
                                 print(error!)
                                 
                             } else {
@@ -87,22 +191,18 @@ class RequestViewController: UIViewController, CLLocationManagerDelegate {
             }
             }
     } else {
-    
             print(error)
         }
     }
 
     }
-    
-    
-    var requestLocation:CLLocationCoordinate2D = CLLocationCoordinate2DMake(0,0)
-    var requestUsername:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         print(requestUsername)
         print(requestLocation)
+        print(driverCLLocation)
         
         let region = MKCoordinateRegion(center: requestLocation, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         
@@ -117,9 +217,61 @@ class RequestViewController: UIViewController, CLLocationManagerDelegate {
         objectAnnotation.coordinate = requestLocation
         objectAnnotation.title = requestUsername
         self.map.addAnnotation(objectAnnotation)
-
-
+        
+        MapItem = [(0,nil),(1,nil)]
+        
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization() //prompt user to give authorization to access location tracking
+        locationManager.startUpdatingLocation()
         // Do any additional setup after loading the view.
+    }
+    
+        /*
+    func calculateTime(var time:NSTimeInterval){
+        let request: MKDirectionsRequest = MKDirectionsRequest()
+        request.source = MapItem[0].mapItem
+        request.destination = MapItem[1].mapItem
+        // Set requestsAlternateRoutes to true to fetch all the reasonable routes from the origin to destination.
+        request.requestsAlternateRoutes = true
+        // Set the transportation type to .Automobile for this particular scenario. eg .Walking and .Any
+        request.transportType = .Automobile
+        // Initialize an MKDirections object with the MKDirectionsRequest, then call calculateDirectionsWithCompletionHandler(_:) to get an MKDirectionsResponse containing an array of MKRoutes.
+        
+        let directions = MKDirections(request: request)
+        directions.calculateDirectionsWithCompletionHandler ({
+            (response: MKDirectionsResponse?, error: NSError?) in
+            if let routeResponse = response?.routes {
+                //sort the routes from least to greatest expected travel time, then pull out the first index, i.e., the index with the shortest expected travel time.
+                let quickestRouteForSegment: MKRoute =
+                    routeResponse.sort({$0.expectedTravelTime <
+                        $1.expectedTravelTime})[0]
+                
+                // Add this new route’s expected travel time to the time parameter.
+                time += quickestRouteForSegment.expectedTravelTime
+                print(time)
+            }
+        })
+        
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .ShortStyle
+        formatter.timeStyle = .ShortStyle
+        travellingT.text = "Travelling Time: \(self.stringFromTimeInterval(time))"
+        etaLabel.text = "ETA: " + formatter.stringFromDate(self.currentDate.dateByAddingTimeInterval(self.time))
+        
+
+    }*/
+    
+    //Return NSTimeInterval as String
+    func stringFromTimeInterval(interval:NSTimeInterval) -> NSString {
+        
+        var ti = NSInteger(interval)
+        var seconds = ti % 60
+        var minutes = (ti / 60) % 60
+        var hours = (ti / 3600)
+        
+        return NSString(format: "%02d:%02d:%02d",hours,minutes,seconds)
     }
     
     override func didReceiveMemoryWarning() {

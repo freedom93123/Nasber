@@ -49,11 +49,17 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
     }
     //declaration of IBAction which allow code to run when a button is tapped
     //riderRequest for ride and store the username & location on parse
-    @IBAction func callUber(sender: AnyObject) {
+    @IBAction func createQuickRequest(sender: AnyObject) {
         
         if riderRequestActive == false {
         
+        let acl = PFACL()
+        acl.setPublicReadAccess(true)
+        acl.setPublicWriteAccess(true)
+        
         var riderRequest = PFObject(className:"riderRequest")
+        riderRequest.ACL = acl
+            
         riderRequest["username"] = PFUser.currentUser()?.username
         riderRequest["location"] = PFGeoPoint(latitude:latitude, longitude:longitude)
         
@@ -62,9 +68,7 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
             (success: Bool, error: NSError?) -> Void in
             if (success) {
       
-                self.callNasberButton.setTitle("Cancel Nasber", forState: UIControlState.Normal)
-                
-                
+                self.callNasberButton.setTitle("Cancel Quick Request", forState: UIControlState.Normal)   
                 
             } else {
                
@@ -81,7 +85,7 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
         
         } else {
             
-            self.callNasberButton.setTitle("Call an Nasber", forState: UIControlState.Normal)
+            self.callNasberButton.setTitle("Create Quick Request", forState: UIControlState.Normal)
             
             riderRequestActive = false
             
@@ -92,10 +96,7 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
                 (objects: [AnyObject]?, error: NSError?) -> Void in
                 
                 if error == nil {
-                    
-                    print("Successfully retrieved \(objects!.count) scores.")
-                    
-                    
+
                     if let objects = objects as? [PFObject] {
                         
                         for object in objects {
@@ -214,12 +215,11 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
                                                 
                                                 //Display driver pin on the map
                                                 pinLocation = CLLocationCoordinate2DMake(driverLocation.latitude, driverLocation.longitude)
-                                                objectAnnotation = MKPointAnnotation()
-                                                objectAnnotation.coordinate = pinLocation
-                                                objectAnnotation.title = "Driver location"
+                                                var driverAnnotation = CustomPointAnnotation()
+                                                driverAnnotation.coordinate = pinLocation
+                                                driverAnnotation.title = "Driver Location"
+                                                driverAnnotation.imageName = "car.png"
                                                 self.map.addAnnotation(objectAnnotation)
-                                                
-                                                
                                                 
                                             }
                                         }
@@ -267,7 +267,6 @@ class RiderViewController: BaseViewController, CLLocationManagerDelegate, MKMapV
         
     }
     
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

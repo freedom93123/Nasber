@@ -52,7 +52,7 @@ class MyProfileViewController: UIViewController, UIImagePickerControllerDelegate
                                 if error != nil {
                                     print(error)
                                 } else if let object = object {
-                               
+                            
                             //validate new contact number
                             let checkPhone = self.isValidPhone(self.contactNo.text!)
                             if checkPhone == false {
@@ -63,7 +63,7 @@ class MyProfileViewController: UIViewController, UIImagePickerControllerDelegate
                             
                             //validate new email address
                             let checkEmail = self.isValidEmail(self.emailAddress.text!)
-                            if checkEmail == true && self.emailAddress.text != nil {
+                            if checkEmail == true || self.emailAddress.text == "" {
                                 object["email"] = self.emailAddress.text
                             } else {
                                 self.displayAlert("Invalid Email Address", message: "Please enter a valid email address")

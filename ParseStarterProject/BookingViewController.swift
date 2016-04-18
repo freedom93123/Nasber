@@ -75,7 +75,6 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                 let hours = meetingET.hoursFrom(meetingST)
                 let minutes = meetingET.minutesFrom(meetingST)
                 
-                
                 if years == 0 && months == 0 && weeks == 0 && days == 0 {
                     
                     let timeOffset = meetingET.offsetFrom(meetingST)
@@ -87,13 +86,16 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                     let buffer: NSTimeInterval = 30*60
                     let driverDepartTime = meetingST.dateByAddingTimeInterval(-(timeFFRider + timeFOriginToDestination + buffer))
                     let tripEndTime = meetingET.dateByAddingTimeInterval(timeFDestinationToOrigin + buffer)
-                    let driverArrivalTime = meetingST.dateByAddingTimeInterval(-timeFFRider)
-                    
-                    //totalTIme = formatter.dateFromString(tripEndTime.offsetFrom(driverDepartTime))!
+                    let driverArrivalTime = meetingST.dateByAddingTimeInterval(-(timeFFRider + timeFOriginToDestination))
                     
                     print(formatter.stringFromDate(driverDepartTime))
                     print(formatter.stringFromDate(tripEndTime))
                     
+                    let currentDate = NSDate()
+                    
+                    if driverDepartTime < currentDate {
+                        self.displayAlert("Booking Rejected", message: "Driver could not make it because of insufficient time")
+                    } else {
                     //Retrieve all meeting time and compare them to implement DSS feature
                     var query = PFQuery(className:"bookingRequest")
                     query.whereKey("driverResponsible", equalTo:"driver")
@@ -119,7 +121,9 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                             
                             //compare booking time
                             print(objectCount)
-                            for var i = 0; i<objectCount; i++ {
+                            
+                            
+                            for i in 0 ..< objectCount {
                                 if driverDepartTime < self.tripSTFromDB[i] && tripEndTime < self.tripSTFromDB[i]{
                                     driverAvailability.append(true)
                                 } else if driverDepartTime > self.tripETFromDB[i] && tripEndTime > self.tripETFromDB[i] {
@@ -137,12 +141,22 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                                 }
                             }
                             
-                            driverAvailable = driverAvailability[objectCount-1]
+                            if objectCount > 0 {
+                                driverAvailable = driverAvailability[objectCount-1]
+                            } else {
+                                driverAvailable = true
+                            }
+                            
                             print(driverAvailable)
                             
-                            if driverAvailable == true {
+                            if driverAvailable == true{
+                                let acl = PFACL()
+                                acl.setPublicReadAccess(true)
+                                acl.setPublicWriteAccess(true)
+
                                 //save the booking request
                                 let bookingRequest = PFObject(className:"bookingRequest")
+                                bookingRequest.ACL = acl
                                 
                                 if PFUser.currentUser()?.username != nil && self.driverLocTF.text != ""{
                                     bookingRequest["username"] = PFUser.currentUser()?.username!
@@ -154,6 +168,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                                     bookingRequest["driverDepartTime"] = driverDepartTime
                                     bookingRequest["tripEndTime"] = tripEndTime
                                     bookingRequest["driverResponsible"] = "driver"
+                                    bookingRequest["driverArrivalTime"] = driverArrivalTime
                                     
                                     /* Futher enhancement on multiple driver
                                      var query = PFQuery(className:"driverLocation")
@@ -181,7 +196,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                                         (success: Bool, error: NSError?) -> Void in
                                         if (success) {
                                             // The object has been saved.
-                                            self.totalTimeLabel.text = "The driver will arrived at: \(formatter.stringFromDate(driverArrivalTime))"
+                                            self.totalTimeLabel.text = "The driver will arrived at:\n \(formatter.stringFromDate(driverArrivalTime))"
                                             print("object has been saved")
                                             self.displayAlert("Booking Approved", message: "The booking request has been successfully saved")
                                         } else {
@@ -193,14 +208,13 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                                 //Booking rejected by the system
                             } else {
                                 
-                                self.displayAlert("Booking Rejected", message: "Please pick a New booking Time.\n" + "Suggested new Booking Time:")
+                                self.displayAlert("Booking Rejected", message: "Please pick a New booking Time.\n" /*+ "Suggested new Booking Time:"*/)
                             }
                             
-                            print(self.tripSTFromDB)
-                            print(self.tripETFromDB)
                         } else {
                             print(error)
                         }
+                        }//if driverDepartTime < currentDate {
                     }
                     
                     
@@ -273,10 +287,6 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                 driverAnnotation.coordinate = driverCLLocation.coordinate
                 driverAnnotation.title = "Driver Location"
                 driverAnnotation.imageName = "car.png"
-                
-                //var pinAnnotationView = MKAnnotationView(annotation: driverAnnotation, reuseIdentifier: nil)
-                //pinAnnotationView.image = UIImage(named:"car.png")
-                
                 self.map.addAnnotation(driverAnnotation)
             }
         })
@@ -424,11 +434,6 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         addressTableView.delegate = addressTableView
         addressTableView.dataSource = addressTableView
         view.addSubview(addressTableView)
-    }
-    
-    //convert the location data into a readable address:
-    func formatAddressFromPlacemark(placemark: CLPlacemark) -> String {
-        return (placemark.addressDictionary!["FormattedAddressLines"] as! [String]).joinWithSeparator(", ")
     }
     
     //alert message
@@ -640,7 +645,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         //Adds the MKRoute's polyline to the map as an overlay.
         map.addOverlay(route.polyline)
         // If the plotted route is the first overlay, sets the map's visible area so it's just big enough to fit the overlay with 10 extra points of padding.
-        if map.overlays.count == 2 {
+        if map.overlays.count == 2 { //Initally = 1
             map.setVisibleMapRect(route.polyline.boundingMapRect,
                                   edgePadding: UIEdgeInsetsMake(10.0, 10.0, 10.0, 10.0),
                                   animated: false)
@@ -656,13 +661,40 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         }*/
     }
     
+    //This gives each route segment a different color.
+    func mapView(map: MKMapView,
+                 rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer! {
+        let polylineRenderer = MKPolylineRenderer(overlay: overlay)
+        if (overlay is MKPolyline) {
+            /*if map.overlays.count == 1 {
+             polylineRenderer.strokeColor =
+             UIColor.blueColor().colorWithAlphaComponent(0.50)
+             } else */if map.overlays.count == 2 {
+                polylineRenderer.strokeColor =
+                    UIColor.greenColor().colorWithAlphaComponent(0.75)
+            } /*else if map.overlays.count == 3 {
+             polylineRenderer.strokeColor =
+             UIColor.redColor().colorWithAlphaComponent(0.50)
+             }*/
+            
+            polylineRenderer.lineWidth = 5
+        }
+        return polylineRenderer
+        
+    }
+    
     //print the ETA
     func printTimeToLabel(time: NSTimeInterval) {
         let timeString = stringFromTimeInterval(time)
         totalTimeLabel.text = "Travelling Time From Origin to Destination: \(timeString)"
     }
     
-    //format the ETA
+    
+    //convert the location data into a readable address:
+    func formatAddressFromPlacemark(placemark: CLPlacemark) -> String {
+        return (placemark.addressDictionary!["FormattedAddressLines"] as! [String]).joinWithSeparator(", ")
+    }
+    //Return NSTimeInterval as String
     func stringFromTimeInterval(interval:NSTimeInterval) -> NSString {
         
         var ti = NSInteger(interval)
@@ -671,28 +703,6 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         var hours = (ti / 3600)
         
         return NSString(format: "%02d:%02d:%02d",hours,minutes,seconds)
-    }
-    
-    //This gives each route segment a different color.
-    func mapView(map: MKMapView,
-                 rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer! {
-        let polylineRenderer = MKPolylineRenderer(overlay: overlay)
-        if (overlay is MKPolyline) {
-            /*if map.overlays.count == 1 {
-                polylineRenderer.strokeColor =
-                    UIColor.blueColor().colorWithAlphaComponent(0.50)
-            } else */if map.overlays.count == 2 {
-                polylineRenderer.strokeColor =
-                    UIColor.greenColor().colorWithAlphaComponent(0.75)
-            } /*else if map.overlays.count == 3 {
-                polylineRenderer.strokeColor =
-                    UIColor.redColor().colorWithAlphaComponent(0.50)
-            }*/
-            
-            polylineRenderer.lineWidth = 5
-        }
-        return polylineRenderer
-        
     }
     
     //create custom annotation to override the old pin image annotation
@@ -766,6 +776,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
     
     
     override func viewWillAppear(animated: Bool) {
+        /*
         let button = UIButton()
         button.frame = CGRectMake(0, 0, 30, 30) //won't work if you don't set frame
         button.setImage(UIImage(named: "eye_open.png"), forState: .Normal)
@@ -774,9 +785,11 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
         let barButton = UIBarButtonItem()
         barButton.customView = button
         self.navigationItem.rightBarButtonItem = barButton
+        */
     }
     
     func eyeButtonPressed(){
+        /*
         if eyePressed == true {
             origin.alpha = 0
             destination.alpha = 0
@@ -800,7 +813,7 @@ class BookingViewController: UIViewController, CLLocationManagerDelegate, MKMapV
                 buttons.hidden = false
             }
             eyePressed = true
-        }
+        }*/
     }
     
     func textField(textField: UITextField,

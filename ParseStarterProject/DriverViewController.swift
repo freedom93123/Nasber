@@ -14,7 +14,17 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
 
     var usernames = [String]()
     var locations = [CLLocationCoordinate2D]()
+    var driverLOC = CLLocation()
     var distances = [CLLocationDistance]()
+    var travellingTimeArray = [NSTimeInterval]()
+    var ETAarray = [NSDate]()
+    var TimeOfRequestCreated = [NSDate]()
+    var driverName = [String]()
+    
+    var requestMapItem = MKMapItem()
+    var driverMapItem = MKMapItem()
+    var time = NSTimeInterval()
+    let currentDate = NSDate()
     
     var locationManager:CLLocationManager!
     
@@ -23,6 +33,7 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
     
     override func viewDidAppear(animated: Bool) {
         self.addSlideMenuButton()
+        self.tableView.reloadData()
     }
     
     override func viewDidLoad() {
@@ -53,7 +64,7 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
             print("Home\n", terminator: "")
             let DriverViewController = self.storyboard!.instantiateViewControllerWithIdentifier("DriverViewController") as UIViewController
             self.navigationController!.pushViewController(DriverViewController, animated: true)
-            tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
+            //tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
             break
         case 1:
             print("My Profile\n", terminator: "")
@@ -62,7 +73,10 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
             tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
             break
         case 2:
-            print("My Booking\n", terminator: "")
+            print("Booking Requests\n", terminator: "")
+            let BookingRequestsTableViewController = self.storyboard!.instantiateViewControllerWithIdentifier("DriverBookingTableViewController") as UIViewController
+            self.navigationController!.pushViewController(BookingRequestsTableViewController, animated: true)
+            tableView.contentInset = UIEdgeInsetsMake(64,0,0,0)
             break
         default:
             print("default\n", terminator: "")
@@ -107,11 +121,36 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
         menuVC.view.frame=CGRectMake(0 - UIScreen.mainScreen().bounds.size.width, 0, UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height);
         UIView.animateWithDuration(0.3, animations: { () -> Void in
             menuVC.view.frame=CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height);
+            menuVC.view.backgroundColor = UIColor.clearColor()
             sender.enabled = true
             }, completion:nil)
     }
 
-
+    //create custom annotation to override the old pin image annotation
+    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+        if !(annotation is CustomPointAnnotation) {
+            return nil
+        }
+        
+        let reuseId = "driverAnnotation"
+        
+        var anView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
+        if anView == nil {
+            anView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            anView!.canShowCallout = true
+        }
+        else {
+            anView!.annotation = annotation
+        }
+        
+        //Set annotation-specific properties **AFTER**
+        //the view is dequeued or created...
+        
+        let cpa = annotation as! CustomPointAnnotation
+        anView!.image = UIImage(named:cpa.imageName)
+        
+        return anView
+    }
 
     //Display location on Mapkit and update the location always
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -153,6 +192,7 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
                             } else if let object = object {
                                 
                                 //update the driver location to parse
+                                self.driverLOC = CLLocation(latitude: location.latitude, longitude: location.longitude)
                                 object["driverLocation"] = PFGeoPoint(latitude:location.latitude, longitude:location.longitude)
                                 
                                 object.saveInBackground()
@@ -185,12 +225,16 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
             (objects: [AnyObject]?, error: NSError?) -> Void in
             
             if error == nil {
-                
 
                 if let objects = objects as? [PFObject] {
                     
                     self.usernames.removeAll()
                     self.locations.removeAll()
+                    self.distances.removeAll()
+                    self.travellingTimeArray.removeAll()
+                    self.ETAarray.removeAll()
+                    self.TimeOfRequestCreated.removeAll()
+                    self.driverName.removeAll()
                     
                     for object in objects {
                         
@@ -198,9 +242,18 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
                         if object["driverResponded"] == nil {
                         
                         if let username = object["username"] as? String{
-                            
+                            self.driverName.append(" - ")
                             self.usernames.append(username)
-                        }
+                            
+                            
+                        } /*else {
+                            self.driverName.append(object["driverResponded"] as! String)
+                            
+                            //delete object if driver responded to the rider quick request
+                             object.deleteInBackground()
+                                print("objectDeleted")
+ 
+                            }*/
                         
                         if let returnedlocation = object["location"] as? PFGeoPoint{
                             
@@ -212,6 +265,77 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
                             
                             let driverCLLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
                             
+                            /*Error occur due to exceeding request rate
+                            //Create a placemark from requestlocation
+                            CLGeocoder().reverseGeocodeLocation(requestCLLocation, completionHandler: {(placemarks:[CLPlacemark]?, error:NSError?) -> Void in
+                                
+                                if error != nil {
+                                    print(error!)
+                                    
+                                } else {
+                                    if let placemarks = placemarks {
+                                        let placemark = placemarks[0]
+                                        
+                                        //Map request and use the placemark to navigate to rider location
+                                        self.requestMapItem = MKMapItem(placemark: MKPlacemark(coordinate: placemark.location!.coordinate, addressDictionary:placemark.addressDictionary as! [String:AnyObject]?))
+                                    } else {
+                                        print("Problem with the data received from geocoder")
+                                    }
+                                    
+                                }
+                                
+                            })
+                            
+                            //Create a placemark from driverlocation
+                            CLGeocoder().reverseGeocodeLocation(driverCLLocation, completionHandler: {(placemarks:[CLPlacemark]?, error:NSError?) -> Void in
+                                
+                                if error != nil {
+                                    print(error!)
+                                    
+                                } else {
+                                    if let placemarks = placemarks {
+                                        let placemark = placemarks[0]
+                                        
+                                        //Map request and use the placemark to navigate to rider location
+                                        self.driverMapItem = MKMapItem(placemark: MKPlacemark(coordinate: placemark.location!.coordinate, addressDictionary:placemark.addressDictionary as! [String:AnyObject]?))
+                                    } else {
+                                        print("Problem with the data received from geocoder")
+                                    }
+                                    
+                                }
+                                
+                            })*/
+
+
+                            // Create an MKDirectionsRequest by setting the MKMapItem  as the origin and setting the MKMapItem as the destination.
+                            let request: MKDirectionsRequest = MKDirectionsRequest()
+                            request.source = self.driverMapItem
+                            request.destination = self.requestMapItem
+                            // Set requestsAlternateRoutes to true to fetch all the reasonable routes from the origin to destination.
+                            request.requestsAlternateRoutes = true
+                            // Set the transportation type to .Automobile for this particular scenario. eg .Walking and .Any
+                            request.transportType = .Automobile
+                            // Initialize an MKDirections object with the MKDirectionsRequest, then call calculateDirectionsWithCompletionHandler(_:) to get an MKDirectionsResponse containing an array of MKRoutes.
+
+                            let directions = MKDirections(request: request)
+                            directions.calculateDirectionsWithCompletionHandler ({
+                                (response: MKDirectionsResponse?, error: NSError?) in
+                                if let routeResponse = response?.routes {
+                                    //sort the routes from least to greatest expected travel time, then pull out the first index, i.e., the index with the shortest expected travel time.
+                                    let quickestRouteForSegment: MKRoute =
+                                        routeResponse.sort({$0.expectedTravelTime <
+                                            $1.expectedTravelTime})[0]
+                                    
+                                    // Add this new route’s expected travel time to the time parameter.
+                                   self.time += quickestRouteForSegment.expectedTravelTime
+                                }
+                            })
+                            
+                            self.travellingTimeArray.append(self.time)
+                            self.ETAarray.append(self.currentDate.dateByAddingTimeInterval(self.time))
+                            //save the time of request made
+                            self.TimeOfRequestCreated.append(object.createdAt!)
+                                    
                             let distance = driverCLLocation.distanceFromLocation(requestCLLocation)
                             
                             self.distances.append(distance/1000)
@@ -227,7 +351,7 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
                 print(error)
             }
         }
-        }
+        }//query declaration
     }//if current user is nil do ^^^^
     }
 
@@ -253,16 +377,37 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
 
     //Table Loading Code
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! MyBookingTableViewCell
 
         // Configure the cell...
         // Convert to one decimal places
         var distanceDouble = Double(distances[indexPath.row])
         var roundedDistance = Double(round(distanceDouble * 10) / 10)
-        cell.textLabel?.text = usernames[indexPath.row] + " - " + String(roundedDistance) + " km away"
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .ShortStyle
+        formatter.timeStyle = .ShortStyle
+        
+        cell.QRusername.text = usernames[indexPath.row]
+        cell.RequestTime.text = "Request Time: " + formatter.stringFromDate(TimeOfRequestCreated[indexPath.row])
+        cell.distance.text = " is " + String(roundedDistance) + " km away"
+        cell.driverResponded.text = "Driver Responded: " + driverName[indexPath.row]
+        //cell.travellingTime.text = "Travelling Time: \(stringFromTimeInterval(self.travellingTimeArray[indexPath.row]))"
+        //cell.ETA.text = formatter.stringFromDate(ETAarray[indexPath.row])
+        
         return cell
     }
     
+    //Return NSTimeInterval as String
+    func stringFromTimeInterval(interval:NSTimeInterval) -> NSString {
+        
+        var ti = NSInteger(interval)
+        var seconds = ti % 60
+        var minutes = (ti / 60) % 60
+        var hours = (ti / 3600)
+        
+        return NSString(format: "%02d:%02d:%02d",hours,minutes,seconds)
+    }
+
 
     /*
     // Override to support conditional editing of the table view.
@@ -327,7 +472,8 @@ class DriverViewController: UITableViewController, SlideMenuDelegate, CLLocation
             
             //Casting as RequestViewController allow the passing var of location and usernames to the segue
             if let destination = segue.destinationViewController as? RequestViewController {
-                
+                locationManager.stopUpdatingLocation()
+                destination.driverCLLocation = driverLOC
                 destination.requestLocation = locations[(tableView.indexPathForSelectedRow?.row)!]
                 destination.requestUsername = usernames[(tableView.indexPathForSelectedRow?.row)!]
             }

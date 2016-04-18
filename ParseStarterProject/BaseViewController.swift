@@ -37,12 +37,20 @@ class BaseViewController: UIViewController, SlideMenuDelegate {
             break
         case 2:
             print("My Booking\n", terminator: "")
+            let MyBookingViewController = self.storyboard!.instantiateViewControllerWithIdentifier("MyBookingTableViewController") as UIViewController
+            self.navigationController!.pushViewController(MyBookingViewController, animated: true)
             break
         default:
             print("default\n", terminator: "")
         }
     }
 
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        if segue.identifier == "logoutDriver" {
+        }
+    }
+    
     func addSlideMenuButton(){
         let btnShowMenu = UIButton(type: UIButtonType.System)
         let image = UIImage(named: "menu.png")
@@ -88,10 +96,10 @@ class BaseViewController: UIViewController, SlideMenuDelegate {
         menuVC.view.layoutIfNeeded()
         
         
-        menuVC.view.frame=CGRectMake(0 - UIScreen.mainScreen().bounds.size.width, 0, UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height);
+        menuVC.view.frame=CGRectMake(0 - UIScreen.mainScreen().bounds.size.width, 0, UIScreen.mainScreen().bounds.size.width/4, UIScreen.mainScreen().bounds.size.height);
         
         UIView.animateWithDuration(0.3, animations: { () -> Void in
-            menuVC.view.frame=CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width, UIScreen.mainScreen().bounds.size.height);
+            menuVC.view.frame=CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width/4, UIScreen.mainScreen().bounds.size.height);
             sender.enabled = true
             }, completion:nil)
     }

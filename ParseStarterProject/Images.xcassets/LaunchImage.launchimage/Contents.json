@@ -3,22 +3,40 @@
     {
       "orientation" : "portrait",
       "idiom" : "ipad",
-      "minimum-system-version" : "7.0",
+      "filename" : "carFinalpotraitIpadLD.png",
       "extent" : "full-screen",
-      "scale" : "2x"
-    },
-    {
-      "orientation" : "landscape",
-      "idiom" : "ipad",
       "minimum-system-version" : "7.0",
-      "extent" : "full-screen",
       "scale" : "1x"
     },
     {
       "orientation" : "landscape",
       "idiom" : "ipad",
-      "minimum-system-version" : "7.0",
+      "filename" : "landscapeiPad.png",
       "extent" : "full-screen",
+      "minimum-system-version" : "7.0",
+      "scale" : "1x"
+    },
+    {
+      "orientation" : "portrait",
+      "idiom" : "ipad",
+      "filename" : "carFinalpotraitIpad.png",
+      "extent" : "full-screen",
+      "minimum-system-version" : "7.0",
+      "scale" : "2x"
+    },
+    {
+      "orientation" : "landscape",
+      "idiom" : "ipad",
+      "filename" : "iPadsize.png",
+      "extent" : "full-screen",
+      "minimum-system-version" : "7.0",
+      "scale" : "2x"
+    },
+    {
+      "orientation" : "portrait",
+      "idiom" : "iphone",
+      "filename" : "carFinaliPhone5.png",
+      "minimum-system-version" : "7.0",
       "scale" : "2x"
     },
     {
@@ -33,13 +51,6 @@
       "minimum-system-version" : "7.0",
       "subtype" : "retina4",
       "scale" : "2x"
-    },
-    {
-      "orientation" : "portrait",
-      "idiom" : "ipad",
-      "minimum-system-version" : "7.0",
-      "extent" : "full-screen",
-      "scale" : "1x"
     }
   ],
   "info" : {
